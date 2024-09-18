@@ -11,6 +11,32 @@ MainWindow::MainWindow(QWidget *parent)
         QSqlDatabase::removeDatabase("myConnection");
     }
 
+    ui->comboBox->setStyleSheet("QComboBox { width: 120px; }");
+    ui->comboBoxEdu->setStyleSheet("QComboBox { width: 120px; }");
+
+
+    ui->comboBoxEdu->addItem("");
+    ui->comboBoxEdu->addItem("博士");
+    ui->comboBoxEdu->addItem("硕士");
+    ui->comboBoxEdu->addItem("本科");
+    ui->comboBoxEdu->addItem("大专");
+    ui->comboBoxEdu->addItem("中专");
+
+
+    ui->comboBoxEdu->setCurrentIndex(0);
+
+
+    ui->comboBox->addItem("");
+    for(int k =  31 ;k > 0 ; k--){
+        QString text =  QString::number(k);
+        qDebug() << "text : " << text ;
+        ui->comboBox->addItem(text);
+    }
+    ui->comboBox->setCurrentIndex(0);
+
+
+    ui->tableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section {background-color: #333; color: white;}");
+
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("D:/compatible.db");
 
@@ -50,9 +76,9 @@ void MainWindow::queryData(){
 
     QString  employeeId = ui->lineEdit_employeeId->text();
     QString  fullName = ui->lineEdit_fullName->text();
-    QString  rank = ui->lineEdit_rank->text();
+    QString  rank = ui->comboBox->currentText();
     QString  institution = ui->lineEdit_institution->text();
-    QString  education = ui->lineEdit_education->text();
+    QString  education = ui->comboBoxEdu->currentText();
 
     qDebug() << "employeeId: " << employeeId << ", fullName "<< fullName;
      qDebug() << "rank: " << rank << ", institution "<< institution << ", education "<< education;
@@ -62,9 +88,9 @@ void MainWindow::queryData(){
     query.bindValue(":offset", offset*pageSize);
     query.bindValue(":employeeId", "%"+ui->lineEdit_employeeId->text()+"%");
     query.bindValue(":fullName", "%"+ui->lineEdit_fullName->text()+"%");
-    query.bindValue(":rank","%"+ui->lineEdit_rank->text()+"%");
+    query.bindValue(":rank","%"+rank+"%");
     query.bindValue(":institution", "%"+ui->lineEdit_institution->text()+"%");
-    query.bindValue(":education", "%"+ui->lineEdit_education->text()+"%");
+    query.bindValue(":education", "%"+education+"%");
 
     if (!query.exec()) {
         qDebug() << "Error: Failed to insert data." << query.lastError();
@@ -113,7 +139,7 @@ void MainWindow::queryData(){
                 if(value.isNull() || value == "null"){
                     value = "--";
                 }
-                qDebug() << "value:" << value  ;
+               // qDebug() << "value:" << value  ;
                 ui->tableWidget->setItem(row, k, new QTableWidgetItem(value));
             }
         }
